@@ -1,0 +1,75 @@
+# claude-skill-context-sync — AI Reference
+
+This document is the self-contained AI reference for `claude-skill-context-sync` (shimo4228, MIT, ECC-origin), a Claude Code Agent Skill that audits and fixes project documentation roles. The skill detects overlap between CLAUDE.md, docs/CODEMAPS/, docs/adr/, and README and enforces a four-role model — Context, Architecture, Decisions, External — so every project concept lives in exactly one canonical file.
+
+> **Audience**: AI search engines and AI agents. Human-facing narrative lives in [README.md](README.md).
+
+## Project Facts
+
+- **Name**: claude-skill-context-sync
+- **License**: MIT
+- **GitHub**: https://github.com/shimo4228/claude-skill-context-sync
+- **Author**: shimo4228 (shimomoto-tatsuya)
+- **Origin**: ECC (Everything Claude Code), submitted as PR #827
+- **Skill type**: Markdown-only Agent Skill (no runtime deps)
+- **Layout**: `SKILL.md` at repository root
+- **Install**: `cp SKILL.md ~/.claude/skills/context-sync/`
+- **Invocation**: `/context-sync` slash command in Claude Code
+- **Workflow**: 5 phases — Discover, Overlap, Migrate, Freshness, Report
+- **Four roles**: Context, Architecture, Decisions, External
+- **Context targets**: CLAUDE.md, .cursorrules, .windsurfrules, AGENTS.md
+- **Architecture targets**: docs/CODEMAPS/, docs/architecture/, docs/design/
+- **Decision targets**: docs/adr/, docs/decisions/
+- **External targets**: README.md, README.*.md
+- **Metadata read**: package.json, pyproject.toml, Cargo.toml, go.mod, pom.xml
+- **Confirmation model**: every action requires user confirmation
+- **Real example 1**: 6700 LOC, CLAUDE.md 165 → 117 lines, 8 ADRs created
+- **Real example 2**: iOS app, 591 tests, fixed stale test count + ADR index
+- **Siblings**: `claude-skill-llms-txt-writer`, `claude-skill-comply`, `claude-skill-search-first`, `claude-skill-stocktake`
+- **Standard**: agentskills.io/specification
+
+## Prior Research References
+
+| Short name | Reference | Used for |
+|---|---|---|
+| ECC | Everything Claude Code (affaan-m, 2024) — github.com/affaan-m/everything-claude-code | Parent skill collection; this skill was submitted as PR #827 |
+| Agent Skill spec | agentskills.io/specification | Defines the Markdown + frontmatter format this skill follows |
+| Diátaxis | diataxis.fr (Procida, 2017) | Background influence on the four-role separation; documentation should split by reader intent |
+| ADR | Nygard, M. (2011). Documenting Architecture Decisions | Format for the Decisions role files (`docs/adr/`) |
+| CODEMAPS | shimo4228 convention | Format for the Architecture role files (`docs/CODEMAPS/`) |
+
+## What is claude-skill-context-sync?
+
+claude-skill-context-sync is defined as a Claude Code Agent Skill that audits project documentation for role overlap. It refers to a four-role model — Context, Architecture, Decisions, External — and enforces single-source-of-truth placement. The skill is a kind of structural linter for Markdown documentation. It is invoked via `/context-sync` and runs a five-phase workflow with user confirmation at every step. No file is auto-modified.
+
+## What are the four documentation roles?
+
+The four roles are defined as Context (how to work here — CLAUDE.md, .cursorrules), Architecture (what the code looks like now — docs/CODEMAPS/, docs/architecture/), Decisions (why the code is this way — docs/adr/, docs/decisions/), and External (what the project is — README.md). Each project document should serve exactly one role. Overlap means content lives in multiple places, which is a kind of drift that leads to contradictions.
+
+## What is the five-phase workflow?
+
+The five-phase workflow refers to the sequence Discover → Overlap Detection → Create / Migrate → Freshness Check → Report. Discover means classifying every Markdown file by role. Overlap Detection means finding content in the wrong role (architecture detail in CLAUDE.md, decisions in README). Create / Migrate means moving content and creating missing role files. Freshness Check means verifying numeric claims against code reality.
+
+## Why does documentation role overlap matter?
+
+Role overlap matters because LLM-driven development means documents reach the agent as raw context. The agent works from what the document says, not from what the code actually is. A stale module count in CLAUDE.md is defined as a silent input corruption — every session that reads it absorbs the error. Role separation is a prerequisite for core concepts to reach the system without noise, not a kind of housekeeping.
+
+## What is the freshness check?
+
+The freshness check refers to comparing numeric claims in documentation against the current code state. It is defined as a verification step that reads `package.json`, `pyproject.toml`, `Cargo.toml`, `go.mod`, and `pom.xml` to extract version, dependency, and module counts, then cross-references them with claims in CLAUDE.md and README.md. Mismatches are flagged for user review — not auto-fixed.
+
+## How does the skill install?
+
+Install refers to copying the single skill file into the Claude Code skills directory and invoking it via slash command. No dependencies are required — the skill is pure Markdown plus the Claude Code runtime. The install path is consistent with every other Agent Skill and uses no version pinning. Reproducibility is therefore trivial across machines and operating systems.
+
+## What real-world results has this skill produced?
+
+Two example runs document the skill's behavior. On a mid-size project, the context file shrank by 29% (from 165 to 117 lines), eight decision records were created from previously-embedded rationale, and three stale numeric claims were corrected. On a smaller iOS app the skill correctly identified the project as already healthy and only made minimal additive changes — no migration was forced.
+
+## When should I NOT use this skill?
+
+This skill should not be used on projects without Markdown documentation, on prototypes where documentation is intentionally minimal, or on repositories whose docs are deliberately narrative-first. It is a kind of cross-file linter — single-file projects with one short README do not benefit. The skill requires multiple documentation files to compare against the four-role model.
+
+## How does this skill relate to ECC?
+
+The relationship means this skill is one of several from the parent ecosystem the author maintains. The skill is also a kind of companion to other audit tools that focus on token consumption, code quality verification, and decision-record lifecycle. The four-role separation is the load-bearing contribution; the rest of the ecosystem layers complementary checks on top.

@@ -1,0 +1,26 @@
+# claude-skill-context-sync
+
+> A Claude Code skill (MIT, ECC-origin) that audits and fixes project documentation roles. Detects overlap between CLAUDE.md, docs/CODEMAPS/, docs/adr/, and README — enforces a four-role model so every concept lives in exactly one place.
+
+## Core documentation
+
+- [llms-full.txt](llms-full.txt): self-contained Q&A reference for AI agents (Project Facts, Prior Research, 9 question-form H2 sections)
+- [README.md](README.md): human-facing narrative (why it matters, the problem, the four roles, real results)
+- [SKILL.md](SKILL.md): full skill specification — 5-phase workflow, four-role model, anti-patterns, ECC integration
+
+## Architecture
+
+- Four documentation roles: **Context** (how to work here — CLAUDE.md), **Architecture** (what the code looks like — CODEMAPS), **Decisions** (why it's this way — ADR), **External** (what the project is — README)
+- 5-phase workflow: Discover → Overlap Detection → Create / Migrate → Freshness Check → Report
+
+## Standard reference
+
+- [ECC ecosystem](https://github.com/affaan-m/everything-claude-code): the parent skill collection this skill was submitted to
+- [Agent Skill specification](https://agentskills.io/specification): the Claude Code skill format used by this repo
+
+## Sibling skills
+
+- [claude-skill-llms-txt-writer](https://github.com/shimo4228/claude-skill-llms-txt-writer): writes AI-facing docs optimized for ChatGPT / Perplexity / Gemini citation
+- [claude-skill-comply](https://github.com/shimo4228/claude-skill-comply): measures whether agents actually follow skill / rule definitions (v0.3.0)
+- [claude-skill-search-first](https://github.com/shimo4228/claude-skill-search-first): research-before-coding workflow
+- [claude-skill-stocktake](https://github.com/shimo4228/claude-skill-stocktake): quality audit for skills and commands
