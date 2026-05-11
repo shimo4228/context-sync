@@ -87,9 +87,9 @@ cp SKILL.md ~/.claude/skills/context-sync/
 
 Then invoke with `/context-sync` in Claude Code.
 
-## Part of the Agent Knowledge Cycle (AKC)
+## About this skill
 
-This skill is the **Maintain** phase of [AKC](https://github.com/shimo4228/agent-knowledge-cycle) — a cyclic self-improvement architecture for AI coding agents.
+This skill implements the **Maintain** phase of the [Agent Knowledge Cycle (AKC)](https://github.com/shimo4228/agent-knowledge-cycle) — a Zenodo-citable six-phase bidirectional growth loop ([DOI 10.5281/zenodo.19200726](https://doi.org/10.5281/zenodo.19200726)) for sustaining intent alignment between an AI agent and its operator over time. AKC is one of three research lines by [@shimo4228](https://github.com/shimo4228), alongside [Contemplative Agent](https://github.com/shimo4228/contemplative-agent) ([DOI 10.5281/zenodo.19212118](https://doi.org/10.5281/zenodo.19212118)) — autonomous agents grounded in four contemplative axioms — and [Agent Attribution Practice (AAP)](https://github.com/shimo4228/agent-attribution-practice) ([DOI 10.5281/zenodo.19652013](https://doi.org/10.5281/zenodo.19652013)) — harness-neutral ADRs on accountability distribution.
 
 ## License
 
