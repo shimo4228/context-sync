@@ -16,45 +16,44 @@ As projects grow, documentation sprawls across multiple files with overlapping r
 - README has internal implementation details that belong elsewhere
 - Design decisions live in comments, PR descriptions, or nowhere at all
 - Numbers in docs (module count, test count, version) silently go stale
-- Architecture docs duplicate design explanations that belong in a specification
+- Domain entities and relationships are described in prose but never made machine-readable
 - Data schemas appear in 3+ files and drift out of sync
 
 ## The Solution
 
-`context-sync` enforces a **five-role model** where every piece of project knowledge lives in exactly one place:
+`context-sync` enforces a **four-role model** where every piece of project knowledge lives in exactly one place:
 
 | Role | Purpose | Examples |
 |------|---------|---------|
-| **Context** | How to work here | CLAUDE.md, .cursorrules |
-| **Specification** | How the system works | docs/spec/ |
-| **Architecture** | Where things are in the code | docs/CODEMAPS/, docs/architecture/ |
-| **Decisions** | Why it's this way | docs/adr/ |
+| **Context** | How to work in this project | CLAUDE.md, .cursorrules, AGENTS.md |
+| **Architecture** | What the code looks like (file-level) AND what concepts it defines (concept-level) | docs/CODEMAPS/, docs/architecture/, graph.jsonld |
+| **Decisions** | Why the code is this way | docs/adr/ |
 | **External** | What this project is | README.md |
 
-### Specification vs Architecture
+### Architecture's two surfaces
 
-These two roles are complementary, not overlapping:
+The Architecture role spans two complementary surfaces that do not overlap:
 
-- **Specification** answers "what does this system do and how is it designed?" — readable by researchers and AI alike, focuses on concepts, data flow, and design choices
-- **Architecture** answers "where is that implemented?" — code-level index with file paths, function names, and line numbers for navigation
+- **Prose (CODEMAPS)** — "where is X implemented?" — file-level index with paths, function names, and line numbers for navigation
+- **JSON-LD triples (graph.jsonld)** — "what is X / how does X relate to Y?" — domain entities and relationships encoded as machine-readable schema.org triples for LLM citation
 
-When both exist, Architecture docs should point to Specification for design details rather than duplicating them.
+The role boundary between CODEMAPS prose and `graph.jsonld` is owned by the [jsonld-knowledge-graph](https://github.com/shimo4228/claude-skill-jsonld-knowledge-graph) skill — `context-sync` defers to it for the concept-level surface.
 
 ## What It Does
 
-1. **Discover** — Scans for context files, classifies them into five roles, identifies missing roles
-2. **Overlap Detection** — Finds content in the wrong role (architecture detail in CLAUDE.md, design explanations in CODEMAPS)
-3. **Create / Migrate** — Creates missing docs (ADR, spec, architecture), moves content, replaces with pointers
+0. **Codemap Freshness Pre-check** — Detects stale `docs/CODEMAPS/` against current source (timestamp lag, file-count drift, missing index) and automatically cascades to `codemap-writer` for regeneration before any other phase runs
+1. **Discover** — Scans for context files, classifies them into four roles, identifies missing roles
+2. **Overlap Detection** — Finds content in the wrong role (architecture detail in CLAUDE.md, decision rationale in README)
+3. **Create / Migrate** — Creates missing docs (ADR, architecture), moves content, replaces with pointers
 4. **Freshness Check** — Verifies numbers match code reality, flags stale files
 5. **Report** — Summary of all changes
 
-Every action requires user confirmation. Nothing is auto-modified.
+**Confirmation policy**: user confirmation is required only for creating a new file or a new directory. Edits to existing files apply automatically — `git diff` is the audit trail, and `git checkout -- <file>` is the undo.
 
 ## Results
 
 **Large project** (6900 LOC, 30 modules):
-- Created system specification from scattered design descriptions
-- CODEMAPS simplified to code-level index (design details → spec)
+- Migrated scattered design descriptions into CODEMAPS prose and a JSON-LD knowledge graph (Architecture's two surfaces)
 - ADRs remain independent decision records
 - All docs maintainable via context-sync
 
