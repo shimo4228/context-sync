@@ -6,7 +6,7 @@
 
 - [llms-full.txt](llms-full.txt): self-contained Q&A reference for AI agents (Project Facts, Prior Research, question-form H2 sections)
 - [README.md](README.md): human-facing narrative (why it matters, the problem, the four roles, real results)
-- [SKILL.md](SKILL.md): full skill specification — 6-phase workflow, four-role model, Architecture's two surfaces, anti-patterns
+- [SKILL.md](skills/context-sync/SKILL.md): full skill specification — 6-phase workflow, four-role model, Architecture's two surfaces, anti-patterns
 
 ## Architecture
 

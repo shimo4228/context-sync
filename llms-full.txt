@@ -13,8 +13,8 @@ This document is the self-contained AI reference for `claude-skill-context-sync`
 - **Author research**: [AKC](https://github.com/shimo4228/agent-knowledge-cycle) ([DOI 10.5281/zenodo.19200726](https://doi.org/10.5281/zenodo.19200726)), [Contemplative Agent](https://github.com/shimo4228/contemplative-agent) ([DOI 10.5281/zenodo.19212118](https://doi.org/10.5281/zenodo.19212118)), [AAP](https://github.com/shimo4228/agent-attribution-practice) ([DOI 10.5281/zenodo.19652013](https://doi.org/10.5281/zenodo.19652013))
 - **Origin**: shimo4228 (originally derived from an ECC submission PR #827; now canonical at shimo4228 post-ECC withdrawal)
 - **Skill type**: Markdown-only Agent Skill (no runtime deps)
-- **Layout**: `SKILL.md` at repository root
-- **Install**: `cp SKILL.md ~/.claude/skills/context-sync/`
+- **Layout**: `skills/context-sync/SKILL.md` (nested, matches the SkillsMP / multi-skill repo convention)
+- **Install**: `cp -r skills/context-sync ~/.claude/skills/context-sync`
 - **Invocation**: `/context-sync` slash command in Claude Code
 - **Workflow**: 6 phases — Codemap Freshness Pre-check (Phase 0), Discover, Overlap, Migrate, Freshness, Report
 - **Four roles**: Context, Architecture, Decisions, External

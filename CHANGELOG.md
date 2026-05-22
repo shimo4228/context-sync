@@ -6,6 +6,8 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
+- Layout normalized to nested: `SKILL.md` moved from repository root to `skills/context-sync/SKILL.md` so the repo matches the other ten `claude-skill-*` repositories. Install instructions in `README.md` and `llms.txt` link targets updated accordingly. History preserved via `git mv`
+
 - Consolidated five documentation roles into four — Specification merged into Architecture as two surfaces (prose CODEMAPS + JSON-LD triples in `graph.jsonld`)
 - Added Phase 0 (Codemap Freshness Pre-check) that cascades to the `codemap-writer` agent when CODEMAPS lag the source tree by seven or more days, drift in file count by twenty percent or more, or the index file is missing
 - Refined confirmation policy: only new file / new directory creation requires user confirmation; edits to existing files apply automatically, with `git diff` as the audit trail

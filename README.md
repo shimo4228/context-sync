@@ -77,11 +77,11 @@ Monthly or per-sprint as a health check. Catches gradual drift that no single PR
 
 ## Installation
 
-Copy `SKILL.md` to your Claude Code skills directory:
+Copy the skill directory into your Claude Code skills tree:
 
 ```bash
-mkdir -p ~/.claude/skills/context-sync
-cp SKILL.md ~/.claude/skills/context-sync/
+git clone https://github.com/shimo4228/claude-skill-context-sync
+cp -r claude-skill-context-sync/skills/context-sync ~/.claude/skills/context-sync
 ```
 
 Then invoke with `/context-sync` in Claude Code.
