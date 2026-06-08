@@ -11,7 +11,7 @@ All notable changes to this project will be documented in this file.
 - Consolidated five documentation roles into four — Specification merged into Architecture as two surfaces (prose CODEMAPS + JSON-LD triples in `graph.jsonld`)
 - Added Phase 0 (Codemap Freshness Pre-check) that cascades to the `codemap-writer` agent when CODEMAPS lag the source tree by seven or more days, drift in file count by twenty percent or more, or the index file is missing
 - Refined confirmation policy: only new file / new directory creation requires user confirmation; edits to existing files apply automatically, with `git diff` as the audit trail
-- Clarified role boundary with `claude-skill-jsonld-knowledge-graph`: context-sync defers to it for the concept-level Architecture surface (`graph.jsonld`)
+- Clarified role boundary with `jsonld-knowledge-graph`: context-sync defers to it for the concept-level Architecture surface (`graph.jsonld`)
 - `origin` field on SKILL.md frontmatter switched from `ECC` to `shimo4228` to reflect post-ECC-withdrawal authorship (originally submitted as ECC PR #827)
 
 ### What it does
@@ -35,6 +35,6 @@ The skill assumes a Markdown-based documentation surface with file-role conventi
 | Skill / Agent | Role | When |
 |---|---|---|
 | `codemap-writer` agent | File-level architecture map regeneration | Phase 0 cascade target when CODEMAPS are stale |
-| [`claude-skill-jsonld-knowledge-graph`](https://github.com/shimo4228/claude-skill-jsonld-knowledge-graph) | Concept-level Architecture surface | Owns the `graph.jsonld` boundary that context-sync defers to |
-| [`claude-skill-llms-txt-writer`](https://github.com/shimo4228/claude-skill-llms-txt-writer) | AI-facing documentation prose | Used when `llms.txt` / `llms-full.txt` need regeneration |
+| [`jsonld-knowledge-graph`](https://github.com/shimo4228/jsonld-knowledge-graph) | Concept-level Architecture surface | Owns the `graph.jsonld` boundary that context-sync defers to |
+| [`llms-txt-writer`](https://github.com/shimo4228/llms-txt-writer) | AI-facing documentation prose | Used when `llms.txt` / `llms-full.txt` need regeneration |
 | `adr-writer` agent | Six-section ADR body generation | Phase 3 invokes it when buried decisions are extracted to formal ADR files |

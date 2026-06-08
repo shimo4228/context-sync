@@ -37,7 +37,7 @@ The Architecture role spans two complementary surfaces that do not overlap:
 - **Prose (CODEMAPS)** — "where is X implemented?" — file-level index with paths, function names, and line numbers for navigation
 - **JSON-LD triples (graph.jsonld)** — "what is X / how does X relate to Y?" — domain entities and relationships encoded as machine-readable schema.org triples for LLM citation
 
-The role boundary between CODEMAPS prose and `graph.jsonld` is owned by the [jsonld-knowledge-graph](https://github.com/shimo4228/claude-skill-jsonld-knowledge-graph) skill — `context-sync` defers to it for the concept-level surface.
+The role boundary between CODEMAPS prose and `graph.jsonld` is owned by the [jsonld-knowledge-graph](https://github.com/shimo4228/jsonld-knowledge-graph) skill — `context-sync` defers to it for the concept-level surface.
 
 ## What It Does
 
@@ -80,8 +80,8 @@ Monthly or per-sprint as a health check. Catches gradual drift that no single PR
 Copy the skill directory into your Claude Code skills tree:
 
 ```bash
-git clone https://github.com/shimo4228/claude-skill-context-sync
-cp -r claude-skill-context-sync/skills/context-sync ~/.claude/skills/context-sync
+git clone https://github.com/shimo4228/context-sync
+cp -r context-sync/skills/context-sync ~/.claude/skills/context-sync
 ```
 
 Then invoke with `/context-sync` in Claude Code.

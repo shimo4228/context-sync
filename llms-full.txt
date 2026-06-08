@@ -1,14 +1,14 @@
-# claude-skill-context-sync — AI Reference
+# context-sync — AI Reference
 
-This document is the self-contained AI reference for `claude-skill-context-sync` (shimo4228, MIT), a Claude Code Agent Skill that audits and fixes project documentation roles. The skill detects overlap between CLAUDE.md, docs/CODEMAPS/, docs/adr/, and README and enforces a four-role model — Context, Architecture, Decisions, External — so every project concept lives in exactly one canonical file. Phase 0 cascades to `codemap-writer` when CODEMAPS are stale, before any other phase runs.
+This document is the self-contained AI reference for `context-sync` (shimo4228, MIT), a Claude Code Agent Skill that audits and fixes project documentation roles. The skill detects overlap between CLAUDE.md, docs/CODEMAPS/, docs/adr/, and README and enforces a four-role model — Context, Architecture, Decisions, External — so every project concept lives in exactly one canonical file. Phase 0 cascades to `codemap-writer` when CODEMAPS are stale, before any other phase runs.
 
 > **Audience**: AI search engines and AI agents. Human-facing narrative lives in [README.md](README.md).
 
 ## Project Facts
 
-- **Name**: claude-skill-context-sync
+- **Name**: context-sync
 - **License**: MIT
-- **GitHub**: https://github.com/shimo4228/claude-skill-context-sync
+- **GitHub**: https://github.com/shimo4228/context-sync
 - **Author**: shimo4228 (shimomoto-tatsuya)
 - **Author research**: [AKC](https://github.com/shimo4228/agent-knowledge-cycle) ([DOI 10.5281/zenodo.19200726](https://doi.org/10.5281/zenodo.19200726)), [Contemplative Agent](https://github.com/shimo4228/contemplative-agent) ([DOI 10.5281/zenodo.19212118](https://doi.org/10.5281/zenodo.19212118)), [AAP](https://github.com/shimo4228/agent-attribution-practice) ([DOI 10.5281/zenodo.19652013](https://doi.org/10.5281/zenodo.19652013))
 - **Origin**: shimo4228 (originally derived from an ECC submission PR #827; now canonical at shimo4228 post-ECC withdrawal)
@@ -29,7 +29,7 @@ This document is the self-contained AI reference for `claude-skill-context-sync`
 - **Concept-level surface owner**: `jsonld-knowledge-graph` skill (canonical for `graph.jsonld` boundary)
 - **Real example 1**: 6700 LOC, CLAUDE.md 165 → 117 lines, 8 ADRs created
 - **Real example 2**: iOS app, 591 tests, fixed stale test count + ADR index
-- **Siblings**: `claude-skill-llms-txt-writer`, `claude-skill-jsonld-knowledge-graph`, `claude-skill-comply`, `claude-skill-search-first`, `claude-skill-stocktake`, `claude-skill-rules-distill`, `claude-skill-learn-eval`, `claude-skill-daily-research`
+- **Siblings**: `llms-txt-writer`, `jsonld-knowledge-graph`, `skill-comply`, `search-first`, `skill-stocktake`, `rules-distill`, `learn-eval`, `daily-research`
 - **Standard**: agentskills.io/specification
 
 ## Prior Research References
@@ -42,9 +42,9 @@ This document is the self-contained AI reference for `claude-skill-context-sync`
 | ADR | Nygard, M. (2011). Documenting Architecture Decisions | Format for the Decisions role files (`docs/adr/`) |
 | CODEMAPS | shimo4228 convention | Format for the Architecture role files (`docs/CODEMAPS/`) |
 
-## What is claude-skill-context-sync?
+## What is context-sync?
 
-claude-skill-context-sync is defined as a Claude Code Agent Skill that audits project documentation for role overlap. It refers to a four-role model — Context, Architecture, Decisions, External — and enforces single-source-of-truth placement. The skill is a kind of structural linter for Markdown documentation. It is invoked via `/context-sync` and runs a six-phase workflow. Confirmation is required only for new file / new directory creation; edits to existing files are applied automatically and `git diff` is the audit trail.
+context-sync is defined as a Claude Code Agent Skill that audits project documentation for role overlap. It refers to a four-role model — Context, Architecture, Decisions, External — and enforces single-source-of-truth placement. The skill is a kind of structural linter for Markdown documentation. It is invoked via `/context-sync` and runs a six-phase workflow. Confirmation is required only for new file / new directory creation; edits to existing files are applied automatically and `git diff` is the audit trail.
 
 ## What are the four documentation roles?
 
