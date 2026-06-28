@@ -1,6 +1,6 @@
 # context-sync
 
-[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/shimo4228/context-sync)
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/shimo4228/context-sync) [![GitMCP](https://img.shields.io/endpoint?url=https://gitmcp.io/badge/shimo4228/context-sync)](https://gitmcp.io/shimo4228/context-sync)
 
 Audit and fix project documentation role overlaps. One command to keep all your context files healthy.
 
