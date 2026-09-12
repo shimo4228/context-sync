@@ -28,22 +28,18 @@ As projects grow, documentation sprawls across multiple files with overlapping r
 | Role | Purpose | Examples |
 |------|---------|---------|
 | **Context** | How to work in this project | CLAUDE.md, .cursorrules, AGENTS.md |
-| **Architecture** | What the code looks like (file-level) AND what concepts it defines (concept-level) | docs/CODEMAPS/, docs/architecture/, graph.jsonld |
+| **Architecture** | What concepts the code defines and how they relate (concept-level) | graph.jsonld, docs/architecture/ |
 | **Decisions** | Why the code is this way | docs/adr/ |
 | **External** | What this project is | README.md |
 
-### Architecture's two surfaces
+### Architecture is concept-level only
 
-The Architecture role spans two complementary surfaces that do not overlap:
+The Architecture role stores domain entities and relationships as machine-readable schema.org triples (`graph.jsonld`), plus at most a short hand-written overview. File-level structure ("where is X implemented?") is derivable from the code with LSP and grep, so it is **not stored** — a hand-maintained module map (`docs/CODEMAPS/` or similar) is reported as a finding, not treated as a role.
 
-- **Prose (CODEMAPS)** — "where is X implemented?" — file-level index with paths, function names, and line numbers for navigation
-- **JSON-LD triples (graph.jsonld)** — "what is X / how does X relate to Y?" — domain entities and relationships encoded as machine-readable schema.org triples for LLM citation
-
-The role boundary between CODEMAPS prose and `graph.jsonld` is owned by the [jsonld-knowledge-graph](https://github.com/shimo4228/jsonld-knowledge-graph) skill — `context-sync` defers to it for the concept-level surface.
+The concept-level surface is owned by the [jsonld-knowledge-graph](https://github.com/shimo4228/jsonld-knowledge-graph) skill — `context-sync` defers to it for that boundary.
 
 ## What It Does
 
-0. **Codemap Freshness Pre-check** — Detects stale `docs/CODEMAPS/` against current source (timestamp lag, file-count drift, missing index) and automatically cascades to `codemap-writer` for regeneration before any other phase runs
 1. **Discover** — Scans for context files, classifies them into four roles, identifies missing roles
 2. **Overlap Detection** — Finds content in the wrong role (architecture detail in CLAUDE.md, decision rationale in README)
 3. **Create / Migrate** — Creates missing docs (ADR, architecture), moves content, replaces with pointers
@@ -55,7 +51,7 @@ The role boundary between CODEMAPS prose and `graph.jsonld` is owned by the [jso
 ## Results
 
 **Large project** (6900 LOC, 30 modules):
-- Migrated scattered design descriptions into CODEMAPS prose and a JSON-LD knowledge graph (Architecture's two surfaces)
+- Migrated scattered design descriptions into a JSON-LD knowledge graph (Architecture role)
 - ADRs remain independent decision records
 - All docs maintainable via context-sync
 

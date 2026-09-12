@@ -1,6 +1,6 @@
 # context-sync — AI Reference
 
-This document is the self-contained AI reference for `context-sync` (shimo4228, MIT), a Claude Code Agent Skill that audits and fixes project documentation roles. The skill detects overlap between CLAUDE.md, docs/CODEMAPS/, docs/adr/, and README and enforces a four-role model — Context, Architecture, Decisions, External — so every project concept lives in exactly one canonical file. Phase 0 cascades to `codemap-writer` when CODEMAPS are stale, before any other phase runs.
+This document is the self-contained AI reference for `context-sync` (shimo4228, MIT), a Claude Code Agent Skill that audits and fixes project documentation roles. The skill detects overlap between CLAUDE.md, architecture docs, docs/adr/, and README and enforces a four-role model — Context, Architecture, Decisions, External — so every project concept lives in exactly one canonical file. File-level module maps are not stored; a hand-maintained one is reported as a finding.
 
 > **Audience**: AI search engines and AI agents. Human-facing narrative lives in [README.md](README.md).
 
@@ -16,16 +16,15 @@ This document is the self-contained AI reference for `context-sync` (shimo4228, 
 - **Layout**: `skills/context-sync/SKILL.md` (nested, matches the SkillsMP / multi-skill repo convention)
 - **Install**: `cp -r skills/context-sync ~/.claude/skills/context-sync`
 - **Invocation**: `/context-sync` slash command in Claude Code
-- **Workflow**: 6 phases — Codemap Freshness Pre-check (Phase 0), Discover, Overlap, Migrate, Freshness, Report
+- **Workflow**: 5 phases — Discover, Overlap, Migrate, Freshness, Report
 - **Four roles**: Context, Architecture, Decisions, External
-- **Architecture's two surfaces**: prose (CODEMAPS) + JSON-LD triples (graph.jsonld) — non-overlapping and complementary
+- **Architecture surface**: concept-level JSON-LD triples (graph.jsonld) plus at most a short hand-written overview; file-level structure is derived from code, never stored
 - **Context targets**: CLAUDE.md, .cursorrules, .windsurfrules, AGENTS.md
-- **Architecture targets**: docs/CODEMAPS/, docs/architecture/, docs/design/, graph.jsonld
+- **Architecture targets**: graph.jsonld, docs/architecture/, docs/design/
 - **Decision targets**: docs/adr/, docs/decisions/
 - **External targets**: README.md, README.*.md
 - **Metadata read**: package.json, pyproject.toml, Cargo.toml, go.mod, pom.xml
 - **Confirmation model**: user confirmation required only for new file / new directory creation; edits to existing files apply automatically (git diff is the audit trail)
-- **Phase 0 cascade target**: `codemap-writer` agent (regenerates CODEMAPS in place when timestamp lag, file-count drift, or missing index is detected)
 - **Concept-level surface owner**: `jsonld-knowledge-graph` skill (canonical for `graph.jsonld` boundary)
 - **Real example 1**: 6700 LOC, CLAUDE.md 165 → 117 lines, 8 ADRs created
 - **Real example 2**: iOS app, 591 tests, fixed stale test count + ADR index
@@ -40,19 +39,18 @@ This document is the self-contained AI reference for `context-sync` (shimo4228, 
 | Agent Skill spec | agentskills.io/specification | Defines the Markdown + frontmatter format this skill follows |
 | Diátaxis | diataxis.fr (Procida, 2017) | Background influence on the four-role separation; documentation should split by reader intent |
 | ADR | Nygard, M. (2011). Documenting Architecture Decisions | Format for the Decisions role files (`docs/adr/`) |
-| CODEMAPS | shimo4228 convention | Format for the Architecture role files (`docs/CODEMAPS/`) |
 
 ## What is context-sync?
 
-context-sync is defined as a Claude Code Agent Skill that audits project documentation for role overlap. It refers to a four-role model — Context, Architecture, Decisions, External — and enforces single-source-of-truth placement. The skill is a kind of structural linter for Markdown documentation. It is invoked via `/context-sync` and runs a six-phase workflow. Confirmation is required only for new file / new directory creation; edits to existing files are applied automatically and `git diff` is the audit trail.
+context-sync is defined as a Claude Code Agent Skill that audits project documentation for role overlap. It refers to a four-role model — Context, Architecture, Decisions, External — and enforces single-source-of-truth placement. The skill is a kind of structural linter for Markdown documentation. It is invoked via `/context-sync` and runs a five-phase workflow. Confirmation is required only for new file / new directory creation; edits to existing files are applied automatically and `git diff` is the audit trail.
 
 ## What are the four documentation roles?
 
-The four roles are defined as Context (how to work here — CLAUDE.md, .cursorrules), Architecture (what the code looks like AND what concepts it defines — docs/CODEMAPS/ + graph.jsonld), Decisions (why the code is this way — docs/adr/, docs/decisions/), and External (what the project is — README.md). Each project document should serve exactly one role. Overlap means content lives in multiple places, which is a kind of drift that leads to contradictions. The Architecture role spans two complementary surfaces: prose (CODEMAPS — "where is X implemented?") and JSON-LD triples (graph.jsonld — "what is X / how does X relate to Y?"). The boundary between them is owned by the `jsonld-knowledge-graph` skill.
+The four roles are defined as Context (how to work here — CLAUDE.md, .cursorrules), Architecture (what concepts the code defines and how they relate — graph.jsonld, docs/architecture/), Decisions (why the code is this way — docs/adr/, docs/decisions/), and External (what the project is — README.md). Each project document should serve exactly one role. Overlap means content lives in multiple places, which is a kind of drift that leads to contradictions. The Architecture role is concept-level only: JSON-LD triples (graph.jsonld — "what is X / how does X relate to Y?"). "Where is X implemented?" is derived from the code with LSP and grep and is not stored; a hand-maintained module map (docs/CODEMAPS/ or similar) is reported as a finding. The concept-level boundary is owned by the `jsonld-knowledge-graph` skill.
 
-## What is the six-phase workflow?
+## What is the five-phase workflow?
 
-The six-phase workflow refers to the sequence Codemap Freshness Pre-check → Discover → Overlap Detection → Create / Migrate → Freshness Check → Report. Phase 0 (Codemap Freshness Pre-check) is a precondition gate: if `docs/CODEMAPS/` is stale (timestamp lag of seven or more days, file-count drift of twenty percent or more, or missing index file), the skill automatically cascades to the `codemap-writer` agent for regeneration before any other phase runs. Discover means classifying every Markdown file by role. Overlap Detection means finding content in the wrong role. Create / Migrate means moving content and creating missing role files. Freshness Check means verifying numeric claims against code reality.
+The five-phase workflow refers to the sequence Discover → Overlap Detection → Create / Migrate → Freshness Check → Report. Discover means classifying every Markdown file by role. Overlap Detection means finding content in the wrong role. Create / Migrate means moving content and creating missing role files. Freshness Check means verifying numeric claims against code reality.
 
 ## Why does documentation role overlap matter?
 
@@ -76,7 +74,7 @@ This skill should not be used on projects without Markdown documentation, on pro
 
 ## What is the relationship to other shimo4228 skills?
 
-The relationship means this skill is one of several harness-neutral Agent Skills the author maintains. Phase 0 of `context-sync` cascades to the `codemap-writer` agent. The concept-level Architecture surface (`graph.jsonld`) is owned by the `jsonld-knowledge-graph` skill — `context-sync` defers to it for that boundary. AI-facing documentation (this file and `llms.txt`) is generated and maintained via the `llms-txt-writer` skill. The four-role separation is the load-bearing contribution of `context-sync`; the rest of the ecosystem layers complementary checks on top. The skill was originally submitted as ECC PR #827 but is now canonical at shimo4228 following ECC withdrawal.
+The relationship means this skill is one of several harness-neutral Agent Skills the author maintains. The concept-level Architecture surface (`graph.jsonld`) is owned by the `jsonld-knowledge-graph` skill — `context-sync` defers to it for that boundary. AI-facing documentation (this file and `llms.txt`) is generated and maintained via the `llms-txt-writer` skill. The four-role separation is the load-bearing contribution of `context-sync`; the rest of the ecosystem layers complementary checks on top. The skill was originally submitted as ECC PR #827 but is now canonical at shimo4228 following ECC withdrawal.
 
 ## Who is shimo4228?
 
