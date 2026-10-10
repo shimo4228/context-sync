@@ -10,25 +10,28 @@ This document is the self-contained AI reference for `context-sync` (shimo4228, 
 - **License**: MIT
 - **GitHub**: https://github.com/shimo4228/context-sync
 - **Author**: shimo4228 (shimomoto-tatsuya)
-- **Author research**: [AKC](https://github.com/shimo4228/agent-knowledge-cycle) ([DOI 10.5281/zenodo.19200726](https://doi.org/10.5281/zenodo.19200726)), [Contemplative Agent](https://github.com/shimo4228/contemplative-agent) ([DOI 10.5281/zenodo.19212118](https://doi.org/10.5281/zenodo.19212118)), [AAP](https://github.com/shimo4228/agent-attribution-practice) ([DOI 10.5281/zenodo.19652013](https://doi.org/10.5281/zenodo.19652013))
+- **Author research**: implements part of the Maintain phase of [AKC](https://github.com/shimo4228/agent-knowledge-cycle) ([DOI 10.5281/zenodo.19200726](https://doi.org/10.5281/zenodo.19200726)); the author's practice lines and their DOIs are listed at the hub https://github.com/shimo4228/shimo4228
 - **Origin**: shimo4228 (originally derived from an ECC submission PR #827; now canonical at shimo4228 post-ECC withdrawal)
-- **Skill type**: Markdown-only Agent Skill (no runtime deps)
-- **Layout**: `skills/context-sync/SKILL.md` (nested, matches the SkillsMP / multi-skill repo convention)
-- **Install**: `cp -r skills/context-sync ~/.claude/skills/context-sync`
-- **Invocation**: `/context-sync` slash command in Claude Code
+- **Status**: active, synced one way from the author's Claude Code harness by `scripts/sync-from-local.sh`; also shipped in the akc-cycle plugin, so this repository can trail the plugin between syncs
+- **Skill type**: Agent Skill — `SKILL.md` plus a standard-library Python 3.11+ evidence script (no third-party runtime deps, no network calls)
+- **Layout**: `skills/context-sync/SKILL.md`, `skills/context-sync/scripts/context_evidence.py`, tests in `skills/context-sync/tests/`
+- **Install**: `git clone https://github.com/shimo4228/context-sync` then `cp -r context-sync/skills/context-sync ~/.claude/skills/context-sync`; or the Claude Code plugin `/plugin marketplace add shimo4228/akc-cycle` + `/plugin install akc-cycle@akc-cycle`
+- **Invocation**: `/context-sync` slash command in Claude Code (`/akc-cycle:context-sync` in the plugin)
+- **Evidence script**: `python3 ~/.claude/skills/context-sync/scripts/context_evidence.py --root .` prints JSON (exit 0; `--gate` exits 3 when a gated check fails)
 - **Workflow**: 5 phases — Discover, Overlap, Migrate, Freshness, Report
 - **Four roles**: Context, Architecture, Decisions, External
 - **Architecture surface**: concept-level JSON-LD triples (graph.jsonld) plus at most a short hand-written overview; file-level structure is derived from code, never stored
-- **Context targets**: CLAUDE.md, .cursorrules, .windsurfrules, AGENTS.md
+- **Context targets**: CLAUDE.md, .cursorrules, .windsurfrules, AGENTS.md, .github/copilot-instructions.md
 - **Architecture targets**: graph.jsonld, docs/architecture/, docs/design/
 - **Decision targets**: docs/adr/, docs/decisions/
-- **External targets**: README.md, README.*.md
+- **External targets**: README.md, README.*.md (README findings are flagged for a README skill, not edited)
+- **AI-facing targets**: llms.txt, llms-full.txt (a fifth, AI-facing set beside the four roles)
 - **Metadata read**: package.json, pyproject.toml, Cargo.toml, go.mod, pom.xml
-- **Confirmation model**: user confirmation required only for new file / new directory creation; edits to existing files apply automatically (git diff is the audit trail)
+- **Confirmation model**: user confirmation required for new file / new directory creation (batched once) and for ADR inputs not found in the source; edits to existing files apply automatically (git diff is the audit trail)
 - **Concept-level surface owner**: `jsonld-knowledge-graph` skill (canonical for `graph.jsonld` boundary)
-- **Real example 1**: 6700 LOC, CLAUDE.md 165 → 117 lines, 8 ADRs created
+- **Real example 1**: 6900 LOC, 30 modules — scattered design descriptions migrated into a JSON-LD knowledge graph
 - **Real example 2**: iOS app, 591 tests, fixed stale test count + ADR index
-- **Siblings**: `llms-txt-writer`, `jsonld-knowledge-graph`, `skill-comply`, `search-first`, `skill-stocktake`, `rules-distill`, `learn-eval`, `daily-research`
+- **Siblings**: `adr-writer` (in akc-cycle), `jsonld-knowledge-graph`, `readme-writer`, `llms-txt-writer`, `skill-comply`, `search-first`, `skill-stocktake`, `rules-distill`, `learn-eval`, `daily-research`
 - **Standard**: agentskills.io/specification
 
 ## Prior Research References
@@ -42,7 +45,7 @@ This document is the self-contained AI reference for `context-sync` (shimo4228, 
 
 ## What is context-sync?
 
-context-sync is defined as a Claude Code Agent Skill that audits project documentation for role overlap. It refers to a four-role model — Context, Architecture, Decisions, External — and enforces single-source-of-truth placement. The skill is a kind of structural linter for Markdown documentation. It is invoked via `/context-sync` and runs a five-phase workflow. Confirmation is required only for new file / new directory creation; edits to existing files are applied automatically and `git diff` is the audit trail.
+context-sync is defined as a Claude Code Agent Skill that audits project documentation for role overlap. It refers to a four-role model — Context, Architecture, Decisions, External — and enforces single-source-of-truth placement. The skill is a kind of structural linter for Markdown documentation. It is invoked via `/context-sync` and runs a five-phase workflow. Confirmation is required for new file / new directory creation and for ADR inputs not found in the source; edits to existing files are applied automatically and `git diff` is the audit trail.
 
 ## What are the four documentation roles?
 
@@ -50,7 +53,7 @@ The four roles are defined as Context (how to work here — CLAUDE.md, .cursorru
 
 ## What is the five-phase workflow?
 
-The five-phase workflow refers to the sequence Discover → Overlap Detection → Create / Migrate → Freshness Check → Report. Discover means classifying every Markdown file by role. Overlap Detection means finding content in the wrong role. Create / Migrate means moving content and creating missing role files. Freshness Check means verifying numeric claims against code reality.
+The five-phase workflow refers to the sequence Discover → Overlap Detection → Create / Migrate → Freshness Check → Report. Discover means classifying every Markdown file by role. Overlap Detection means finding content in the wrong role. Create / Migrate means moving content and creating missing role files. Freshness Check means running the bundled evidence script to check numbers, paths, the ADR index and llms.txt links against the code. Report means listing every file created and edited and every finding handed elsewhere. Only the Freshness Check runs a script; role classification is the LLM's judgment, so detections can vary between runs.
 
 ## Why does documentation role overlap matter?
 
@@ -58,15 +61,15 @@ Role overlap matters because LLM-driven development means documents reach the ag
 
 ## What is the freshness check?
 
-The freshness check refers to comparing numeric claims in documentation against the current code state. It is defined as a verification step that reads `package.json`, `pyproject.toml`, `Cargo.toml`, `go.mod`, and `pom.xml` to extract version, dependency, and module counts, then cross-references them with claims in CLAUDE.md and README.md. Mismatches are flagged for user review — not auto-fixed.
+The freshness check refers to comparing numeric claims in documentation against the current code state. It is defined as a verification step that runs `scripts/context_evidence.py` (standard-library Python 3.11+), which reads `package.json`, `pyproject.toml`, `Cargo.toml`, `go.mod`, and `pom.xml`, counts source files, checks referenced paths, the ADR index (via adr-writer's checker; reported under `degraded` when absent), graph.jsonld JSON validity and llms.txt links, and emits JSON evidence that the skill compares with claims in CLAUDE.md and README.md. Mismatches in existing files are corrected automatically and listed in the final report; README mismatches are flagged for a README skill instead of edited.
 
 ## How does the skill install?
 
-Install refers to copying the single skill file into the Claude Code skills directory and invoking it via slash command. No dependencies are required — the skill is pure Markdown plus the Claude Code runtime. The install path is consistent with every other Agent Skill and uses no version pinning. Reproducibility is therefore trivial across machines and operating systems.
+Install refers to cloning the repository and copying the `skills/context-sync` folder to `~/.claude/skills/context-sync`, or installing the akc-cycle Claude Code plugin, then invoking `/context-sync`. Requirements are Claude Code and Python 3.11+ (standard library only) for the evidence script, which must run from `~/.claude/skills/context-sync`. Two sibling skills are optional: `adr-writer` (writes ADRs and supplies the ADR index checker) and `jsonld-knowledge-graph` (writes and lints graph.jsonld; its linter needs `uv`).
 
 ## What real-world results has this skill produced?
 
-Two example runs document the skill's behavior. On a mid-size project, the context file shrank by 29% (from 165 to 117 lines), eight decision records were created from previously-embedded rationale, and three stale numeric claims were corrected. On a smaller iOS app the skill correctly identified the project as already healthy and only made minimal additive changes — no migration was forced.
+Two example runs document the skill's behavior. On a large project (6900 LOC, 30 modules), scattered design descriptions were migrated into a JSON-LD knowledge graph (Architecture role). On a smaller iOS app (591 tests) the skill judged that no role split was needed for its size; the only actions were a missing ADR index and a corrected stale test count. An earlier version of the skill, which asked before each phase, cut one project's CLAUDE.md from 165 to 117 lines and corrected its stale LOC and test counts.
 
 ## When should I NOT use this skill?
 
@@ -74,8 +77,8 @@ This skill should not be used on projects without Markdown documentation, on pro
 
 ## What is the relationship to other shimo4228 skills?
 
-The relationship means this skill is one of several harness-neutral Agent Skills the author maintains. The concept-level Architecture surface (`graph.jsonld`) is owned by the `jsonld-knowledge-graph` skill — `context-sync` defers to it for that boundary. AI-facing documentation (this file and `llms.txt`) is generated and maintained via the `llms-txt-writer` skill. The four-role separation is the load-bearing contribution of `context-sync`; the rest of the ecosystem layers complementary checks on top. The skill was originally submitted as ECC PR #827 but is now canonical at shimo4228 following ECC withdrawal.
+The relationship means this skill is one of several harness-neutral Agent Skills the author maintains. The concept-level Architecture surface (`graph.jsonld`) is owned by the `jsonld-knowledge-graph` skill — `context-sync` defers to it for that boundary. ADRs are created through the `adr-writer` skill (shipped in akc-cycle); README findings go to `readme-writer`. AI-facing documentation (this file and `llms.txt`) is generated and maintained via the `llms-txt-writer` skill. The four-role separation is the load-bearing contribution of `context-sync`; the rest of the ecosystem layers complementary checks on top. The skill was originally submitted as ECC PR #827 but is now canonical at shimo4228 following ECC withdrawal.
 
 ## Who is shimo4228?
 
-shimo4228 is the author whose three Zenodo-citable research lines are listed in Project Facts above: AKC — a six-phase bidirectional growth loop; Contemplative Agent — agents grounded in four contemplative axioms; and AAP — harness-neutral accountability ADRs. This skill is defined as scaffolding for the **Maintain** phase of AKC.
+shimo4228 is the author; the hub at https://github.com/shimo4228/shimo4228 lists the author's long-running practice lines and their DOIs, AKC (a six-phase bidirectional growth loop) among them. This skill is defined as scaffolding for the **Maintain** phase of AKC.
